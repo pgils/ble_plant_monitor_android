@@ -24,12 +24,15 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ParcelUuid;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Activity for scanning and displaying available Bluetooth LE devices.
@@ -177,8 +181,20 @@ public class DeviceScanActivity extends ListActivity {
                 }
             }, SCAN_PERIOD);
 
+            ScanSettings settings = new ScanSettings.Builder()
+                    .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                    .build();
+
+            // filter to only show out nodes
+            ScanFilter filter = new ScanFilter.Builder()
+                    .setServiceUuid(ParcelUuid.fromString("00000000-0000-0000-0000-420690000000"),
+                            ParcelUuid.fromString("00000000-0000-0000-0000-111110000000"))
+                    .build();
+            List<ScanFilter> filterList = new ArrayList<>();
+            filterList.add(filter);
+
             mScanning = true;
-            scanner.startScan(mLeScanCallback);
+            scanner.startScan(filterList, settings, mLeScanCallback);
         } else {
             mScanning = false;
             scanner.stopScan(mLeScanCallback);
