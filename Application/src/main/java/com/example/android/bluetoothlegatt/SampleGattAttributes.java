@@ -23,16 +23,17 @@ import java.util.HashMap;
  */
 public class SampleGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
-    public static String HEART_RATE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
-    public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
+    // The service UUID advertised by BlueTanist nodes. Used for filtering.
+    public static String NODE_ADVERTISEMENT_UUID = "00000000-0000-0000-0000-420690000000";
+    public static String NODE_ADVERTISEMENT_MASK = "00000000-0000-0000-0000-111110000000";
+    public static String NODE_SENSOR_DATA = "22222222-0000-0000-0000-222222222222";
+//    public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
 
     static {
-        // Sample Services.
-        attributes.put("0000180d-0000-1000-8000-00805f9b34fb", "Heart Rate Service");
-        attributes.put("0000180a-0000-1000-8000-00805f9b34fb", "Device Information Service");
-        // Sample Characteristics.
-        attributes.put(HEART_RATE_MEASUREMENT, "Heart Rate Measurement");
-        attributes.put("00002a29-0000-1000-8000-00805f9b34fb", "Manufacturer Name String");
+        attributes.put(NODE_SENSOR_DATA, "Sensor Data");
+        attributes.put("22222222-0000-0000-0000-000000000001", "Temperature");
+        attributes.put("22222222-0000-0000-0000-000000000002", "Humidity");
+        attributes.put("22222222-0000-0000-0000-000000000003", "Water");
     }
 
     public static String lookup(String uuid, String defaultName) {

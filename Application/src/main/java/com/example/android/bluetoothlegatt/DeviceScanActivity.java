@@ -187,8 +187,8 @@ public class DeviceScanActivity extends ListActivity {
 
             // filter to only show out nodes
             ScanFilter filter = new ScanFilter.Builder()
-                    .setServiceUuid(ParcelUuid.fromString("00000000-0000-0000-0000-420690000000"),
-                            ParcelUuid.fromString("00000000-0000-0000-0000-111110000000"))
+                    .setServiceUuid(ParcelUuid.fromString(SampleGattAttributes.NODE_ADVERTISEMENT_UUID),
+                            ParcelUuid.fromString(SampleGattAttributes.NODE_ADVERTISEMENT_MASK))
                     .build();
             List<ScanFilter> filterList = new ArrayList<>();
             filterList.add(filter);
