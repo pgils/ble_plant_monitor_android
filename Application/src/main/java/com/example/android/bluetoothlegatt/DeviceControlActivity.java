@@ -31,7 +31,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ListAdapter;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
@@ -52,18 +55,19 @@ public class DeviceControlActivity extends Activity {
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
     private TextView mConnectionState;
-    private TextView mDataField;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
     private BluetoothLeService mBluetoothLeService;
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =
             new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
+    private ArrayList<HashMap<String, String>> mGattServiceData;
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
 
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
+    private final String LIST_DATA = "DATA";
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -108,7 +112,8 @@ public class DeviceControlActivity extends Activity {
                 // Show all the supported services and characteristics on the user interface.
                 displayGattServices(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA),
+                        intent.getStringExtra(BluetoothLeService.UUID_DATA));
             }
         }
     };
@@ -149,7 +154,6 @@ public class DeviceControlActivity extends Activity {
 
     private void clearUI() {
         mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
-        mDataField.setText(R.string.no_data);
     }
 
     @Override
@@ -166,7 +170,6 @@ public class DeviceControlActivity extends Activity {
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
-        mDataField = (TextView) findViewById(R.id.data_value);
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -235,9 +238,17 @@ public class DeviceControlActivity extends Activity {
         });
     }
 
-    private void displayData(String data) {
+    private void displayData(String data, String uuid) {
         if (data != null) {
-            mDataField.setText(data);
+            BaseExpandableListAdapter adapter = (BaseExpandableListAdapter) mGattServicesList.getExpandableListAdapter();
+            int groupLen = adapter.getChildrenCount(0);
+            for (int i = 0; i < groupLen; i++) {
+                HashMap<String,String> map = (HashMap<String,String>) adapter.getChild(0, i);
+                if(map.get(LIST_UUID).equals(uuid)) {
+                    map.put(LIST_DATA, data);
+                }
+            }
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -249,7 +260,8 @@ public class DeviceControlActivity extends Activity {
         String uuid = null;
         String unknownServiceString = getResources().getString(R.string.unknown_service);
         String unknownCharaString = getResources().getString(R.string.unknown_characteristic);
-        ArrayList<HashMap<String, String>> gattServiceData = new ArrayList<HashMap<String, String>>();
+        String unknownData = getResources().getString(R.string.unknown_data);
+        mGattServiceData = new ArrayList<HashMap<String, String>>();
         ArrayList<ArrayList<HashMap<String, String>>> gattCharacteristicData
                 = new ArrayList<ArrayList<HashMap<String, String>>>();
         mGattCharacteristics = new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
@@ -258,10 +270,14 @@ public class DeviceControlActivity extends Activity {
         for (BluetoothGattService gattService : gattServices) {
             HashMap<String, String> currentServiceData = new HashMap<String, String>();
             uuid = gattService.getUuid().toString();
+            // we are only interested in sensor data
+            if (!uuid.equals(BlueTanistGattAttributes.NODE_SENSOR_DATA)) {
+                continue;
+            }
             currentServiceData.put(
-                    LIST_NAME, SampleGattAttributes.lookup(uuid, unknownServiceString));
+                    LIST_NAME, BlueTanistGattAttributes.lookup(uuid, unknownServiceString));
             currentServiceData.put(LIST_UUID, uuid);
-            gattServiceData.add(currentServiceData);
+            mGattServiceData.add(currentServiceData);
 
             ArrayList<HashMap<String, String>> gattCharacteristicGroupData =
                     new ArrayList<HashMap<String, String>>();
@@ -276,8 +292,9 @@ public class DeviceControlActivity extends Activity {
                 HashMap<String, String> currentCharaData = new HashMap<String, String>();
                 uuid = gattCharacteristic.getUuid().toString();
                 currentCharaData.put(
-                        LIST_NAME, SampleGattAttributes.lookup(uuid, unknownCharaString));
+                        LIST_NAME, BlueTanistGattAttributes.lookup(uuid, unknownCharaString));
                 currentCharaData.put(LIST_UUID, uuid);
+                currentCharaData.put(LIST_DATA, unknownData);
                 gattCharacteristicGroupData.add(currentCharaData);
             }
             mGattCharacteristics.add(charas);
@@ -286,13 +303,13 @@ public class DeviceControlActivity extends Activity {
 
         SimpleExpandableListAdapter gattServiceAdapter = new SimpleExpandableListAdapter(
                 this,
-                gattServiceData,
+                mGattServiceData,
                 android.R.layout.simple_expandable_list_item_2,
                 new String[] {LIST_NAME, LIST_UUID},
                 new int[] { android.R.id.text1, android.R.id.text2 },
                 gattCharacteristicData,
                 android.R.layout.simple_expandable_list_item_2,
-                new String[] {LIST_NAME, LIST_UUID},
+                new String[] {LIST_NAME, LIST_DATA},
                 new int[] { android.R.id.text1, android.R.id.text2 }
         );
         mGattServicesList.setAdapter(gattServiceAdapter);

@@ -19,9 +19,9 @@ package com.example.android.bluetoothlegatt;
 import java.util.HashMap;
 
 /**
- * This class includes a small subset of standard GATT attributes for demonstration purposes.
+ * This class includes a small subset of standard GATT attributes.
  */
-public class SampleGattAttributes {
+public class BlueTanistGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
     // The service UUID advertised by BlueTanist nodes. Used for filtering.
     public static String NODE_ADVERTISEMENT_UUID = "00000000-0000-0000-0000-420690000000";
