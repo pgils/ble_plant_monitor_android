@@ -110,6 +110,7 @@ public class DeviceScanActivity extends ListActivity {
         switch (item.getItemId()) {
             case R.id.menu_scan:
                 mLeDeviceListAdapter.clear();
+                mLeDeviceListAdapter.notifyDataSetChanged();
                 scanLeDevice(true);
                 break;
             case R.id.menu_stop:
@@ -133,6 +134,7 @@ public class DeviceScanActivity extends ListActivity {
         // Initializes list view adapter.
         mLeDeviceListAdapter = new LeDeviceListAdapter();
         setListAdapter(mLeDeviceListAdapter);
+        mLeDeviceListAdapter.notifyDataSetChanged();
         scanLeDevice(true);
     }
 
@@ -151,6 +153,7 @@ public class DeviceScanActivity extends ListActivity {
         super.onPause();
         scanLeDevice(false);
         mLeDeviceListAdapter.clear();
+        mLeDeviceListAdapter.notifyDataSetChanged();
     }
 
     @Override
