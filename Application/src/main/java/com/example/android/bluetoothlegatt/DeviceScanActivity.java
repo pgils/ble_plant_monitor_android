@@ -172,6 +172,19 @@ public class DeviceScanActivity extends ListActivity {
 
     private void scanLeDevice(final boolean enable) {
         final BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
+
+        final ScanSettings settings = new ScanSettings.Builder()
+                .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                .build();
+
+        // filter to only show out nodes
+        final ScanFilter filter = new ScanFilter.Builder()
+                .setServiceUuid(ParcelUuid.fromString(BlueTanistGattAttributes.NODE_ADVERTISEMENT_UUID),
+                        ParcelUuid.fromString(BlueTanistGattAttributes.NODE_ADVERTISEMENT_MASK))
+                .build();
+        final List<ScanFilter> filterList = new ArrayList<>();
+        filterList.add(filter);
+
         if (enable) {
 
             // Stops scanning after a pre-defined scan period.
@@ -179,22 +192,10 @@ public class DeviceScanActivity extends ListActivity {
                 @Override
                 public void run() {
                     mScanning = false;
-                    scanner.startScan(mLeScanCallback);
+                    scanner.startScan(filterList, settings, mLeScanCallback);
                     invalidateOptionsMenu();
                 }
             }, SCAN_PERIOD);
-
-            ScanSettings settings = new ScanSettings.Builder()
-                    .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                    .build();
-
-            // filter to only show out nodes
-            ScanFilter filter = new ScanFilter.Builder()
-                    .setServiceUuid(ParcelUuid.fromString(BlueTanistGattAttributes.NODE_ADVERTISEMENT_UUID),
-                            ParcelUuid.fromString(BlueTanistGattAttributes.NODE_ADVERTISEMENT_MASK))
-                    .build();
-            List<ScanFilter> filterList = new ArrayList<>();
-            filterList.add(filter);
 
             mScanning = true;
             scanner.startScan(filterList, settings, mLeScanCallback);
