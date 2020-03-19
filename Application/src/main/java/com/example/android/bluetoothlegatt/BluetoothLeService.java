@@ -31,6 +31,8 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 
 /**
@@ -122,11 +124,10 @@ public class BluetoothLeService extends Service {
 
             final byte[] data = characteristic.getValue();
             if (data != null && data.length > 0) {
-                final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for(byte byteChar : data)
-                    // prepend bytes to the string
-                    stringBuilder.insert(0, String.format("%02d ", byteChar));
-                intent.putExtra(EXTRA_DATA, stringBuilder.toString());
+                ByteBuffer wrapped = ByteBuffer.wrap(data);
+                wrapped.order(ByteOrder.LITTLE_ENDIAN);
+                int num = wrapped.getInt();
+                intent.putExtra(EXTRA_DATA, String.valueOf(num));
                 intent.putExtra(UUID_DATA, characteristic.getUuid().toString());
             }
         sendBroadcast(intent);
