@@ -18,6 +18,10 @@
           android:checkable="false"
           android:orderInCategory="1"
           android:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_refresh_data"
+          android:title="@string/menu_refresh"
+          android:orderInCategory="50"
+          android:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_connect"
           android:title="@string/menu_connect"
           android:orderInCategory="100"

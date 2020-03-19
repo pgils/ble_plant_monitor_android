@@ -57,7 +57,7 @@ public class DeviceControlActivity extends Activity {
     private BluetoothLeService mBluetoothLeService;
     private List<BluetoothGattCharacteristic> mGattCharacteristics =
             new ArrayList<BluetoothGattCharacteristic>();
-    private List<BluetoothGattCharacteristic> mGattCharacteristicsToGet;
+    private int mCharcteristicIndex;
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
 
@@ -111,7 +111,6 @@ public class DeviceControlActivity extends Activity {
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA),
                         intent.getStringExtra(BluetoothLeService.UUID_DATA));
-                mGattCharacteristics.remove(0);
                 updateGattData();
             }
         }
@@ -170,9 +169,11 @@ public class DeviceControlActivity extends Activity {
         if (mConnected) {
             menu.findItem(R.id.menu_connect).setVisible(false);
             menu.findItem(R.id.menu_disconnect).setVisible(true);
+            menu.findItem(R.id.menu_refresh).setVisible(true);
         } else {
             menu.findItem(R.id.menu_connect).setVisible(true);
             menu.findItem(R.id.menu_disconnect).setVisible(false);
+            menu.findItem(R.id.menu_refresh).setVisible(false);
         }
         return true;
     }
@@ -185,6 +186,10 @@ public class DeviceControlActivity extends Activity {
                 return true;
             case R.id.menu_disconnect:
                 mBluetoothLeService.disconnect();
+                return true;
+            case R.id.menu_refresh_data:
+                mCharcteristicIndex = mGattCharacteristics.size();
+                updateGattData();
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -203,8 +208,10 @@ public class DeviceControlActivity extends Activity {
     }
 
     private boolean updateGattData() {
-        if (mGattCharacteristics != null && !mGattCharacteristics.isEmpty()) {
-            BluetoothGattCharacteristic characteristic = mGattCharacteristics.get(0);
+        if (mGattCharacteristics != null && !mGattCharacteristics.isEmpty()
+                && (--mCharcteristicIndex >= 0)) {
+            BluetoothGattCharacteristic characteristic =
+                    mGattCharacteristics.get(mCharcteristicIndex);
             final int charaProp = characteristic.getProperties();
             if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
                 // If there is an active notification on a characteristic, clear
@@ -271,8 +278,7 @@ public class DeviceControlActivity extends Activity {
                 gattCharacteristicGroupData.add(currentCharaData);
             }
             mGattCharacteristics = gattCharacteristics;
-            // TODO: start timer -> set Characteristics to get
-            mGattCharacteristicsToGet = gattCharacteristics;
+            mCharcteristicIndex = mGattCharacteristics.size();
         }
 
         SimpleAdapter gattServiceAdapter = new SimpleAdapter(
