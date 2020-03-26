@@ -127,7 +127,8 @@ public class BluetoothLeService extends Service {
                 ByteBuffer wrapped = ByteBuffer.wrap(data);
                 wrapped.order(ByteOrder.LITTLE_ENDIAN);
                 int num = wrapped.getInt();
-                intent.putExtra(EXTRA_DATA, String.valueOf(num));
+                // divide by 100 for scaling (0.01)
+                intent.putExtra(EXTRA_DATA, String.valueOf((float) num / 100));
                 intent.putExtra(UUID_DATA, characteristic.getUuid().toString());
             }
         sendBroadcast(intent);
