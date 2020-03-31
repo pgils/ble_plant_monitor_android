@@ -177,7 +177,7 @@ public class DeviceScanActivity extends ListActivity {
                 .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
                 .build();
 
-        // filter to only show out nodes
+        // filter to only show our BlueTanist nodes
         final ScanFilter filter = new ScanFilter.Builder()
                 .setServiceUuid(ParcelUuid.fromString(BlueTanistGattAttributes.NODE_ADVERTISEMENT_UUID),
                         ParcelUuid.fromString(BlueTanistGattAttributes.NODE_ADVERTISEMENT_MASK))

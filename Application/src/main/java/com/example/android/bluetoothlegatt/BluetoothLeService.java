@@ -122,6 +122,7 @@ public class BluetoothLeService extends Service {
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
 
+            // Get 4 bytes of characteristic data
             final byte[] data = characteristic.getValue();
             if (data != null && data.length > 0) {
                 ByteBuffer wrapped = ByteBuffer.wrap(data);

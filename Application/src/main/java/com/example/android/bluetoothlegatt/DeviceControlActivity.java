@@ -188,6 +188,7 @@ public class DeviceControlActivity extends Activity {
                 mBluetoothLeService.disconnect();
                 return true;
             case R.id.menu_refresh_data:
+                // 'reset' characteristics
                 mCharcteristicIndex = mGattCharacteristics.size();
                 updateGattData();
                 return true;
@@ -207,7 +208,9 @@ public class DeviceControlActivity extends Activity {
         });
     }
 
+    // Get GATT characteristic from BLE device.
     private boolean updateGattData() {
+        // check if any characteristic in queue to get
         if (mGattCharacteristics != null && !mGattCharacteristics.isEmpty()
                 && (--mCharcteristicIndex >= 0)) {
             BluetoothGattCharacteristic characteristic =
@@ -233,6 +236,7 @@ public class DeviceControlActivity extends Activity {
         return false;
     }
 
+    // Set the field for <uuid> to <data>
     private void displayData(String data, String uuid) {
         if (data != null) {
             SimpleAdapter adapter = (SimpleAdapter) mGattServicesList.getAdapter();
@@ -246,8 +250,8 @@ public class DeviceControlActivity extends Activity {
         }
     }
 
-    // Demonstrates how to iterate through the supported GATT Services/Characteristics.
-    // In this sample, we populate the data structure that is bound to the ExpandableListView
+    // iterate through the supported GATT Services/Characteristics.
+    // populate the data structure that is bound to the ListView
     // on the UI.
     private void displayGattServices(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;

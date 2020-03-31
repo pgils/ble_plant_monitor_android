@@ -19,7 +19,7 @@ package com.example.android.bluetoothlegatt;
 import java.util.HashMap;
 
 /**
- * This class includes a small subset of standard GATT attributes.
+ * This class includes a small subset of GATT attributes.
  */
 public class BlueTanistGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
