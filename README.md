@@ -1,24 +1,25 @@
 
-Android BluetoothLeGatt Sample
+BlueTanist plant monitor
 ===================================
 
-This sample demonstrates how to use the Bluetooth LE Generic Attribute Profile (GATT)
-to transmit arbitrary data between devices.
+Based on the android [BluetoothLeGatt][1] sample.
+
+[1]:https://github.com/android/connectivity-samples/tree/master/BluetoothLeGatt
 
 Introduction
 ------------
 
-This sample shows a list of available Bluetooth LE devices and provides
-an interface to connect, display data and display GATT services and
-characteristics supported by the devices.
+This application shows a list of available [BlueTanist monitor devices][2] and provides
+an interface to connect and display sensor data.
 
-It creates a [Service][1] for managing connection and data communication with a GATT server
-hosted on a given Bluetooth LE device.
+It creates a [Service][3] for managing connection and data communication with a GATT server
+hosted on a given BlueTanist monitor device.
 
-The Activities communicate with the Service, which in turn interacts with the [Bluetooth LE API][2].
+The Activities communicate with the Service, which in turn interacts with the [Bluetooth LE API][4].
 
-[1]:http://developer.android.com/reference/android/app/Service.html
-[2]:https://developer.android.com/reference/android/bluetooth/BluetoothGatt.html
+[2]:https://github.com/pgils/ble_plant_monitor
+[3]:http://developer.android.com/reference/android/app/Service.html
+[4]:https://developer.android.com/reference/android/bluetooth/BluetoothGatt.html
 
 Pre-requisites
 --------------
@@ -35,16 +36,5 @@ Screenshots
 Getting Started
 ---------------
 
-This sample uses the Gradle build system. To build this project, use the
+This application uses the Gradle build system. To build this project, use the
 "gradlew build" command or use "Import Project" in Android Studio.
-
-Support
--------
-
-- Stack Overflow: http://stackoverflow.com/questions/tagged/android
-
-If you've found an error in this sample, please file an issue:
-https://github.com/android/connectivity
-
-Patches are encouraged, and may be submitted by forking this project and
-submitting a pull request through GitHub. Please see CONTRIBUTING.md for more details.
